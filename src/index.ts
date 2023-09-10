@@ -47,10 +47,10 @@ type ExecReturn<T, U extends readonly any[] = readonly any[]> = (
  *
  * @param method The method used to generate the values.
  * @param options The optional options used to configure this method.
- * @todo @param options.maxTime The time in milliseconds this method may take before throwing an error. Defaults to `50`.
+ * @param options.maxTime The time in milliseconds this method may take before throwing an error. Defaults to `50`.
  * @param options.maxRetries The total number of attempts to try before throwing an error. Defaults to `50`.
  * @param options.exclude The value or values that should be excluded/skipped. Defaults to `[]`.
- * @param options.store The store of unique entries. Defaults to `GLOBAL_UNIQUE_STORE`.
+ * @param options.store The store of unique entries. Defaults to `new Map()`.
  */
 export default function unique<T, U extends readonly any[] = readonly any[]>(
     method: UniqueReturn<T, U>,
@@ -60,9 +60,10 @@ export default function unique<T, U extends readonly any[] = readonly any[]>(
      * @todo implement maxTime
      */
     const {
-        store: storeOption = {},
+        maxTime = 50,
         maxRetries = 50,
         exclude: excludeOption = [],
+        store: storeOption,
     } = options;
     const store: Map<string, T> = storeOption
         ? new Map(Object.entries(storeOption))
@@ -70,8 +71,14 @@ export default function unique<T, U extends readonly any[] = readonly any[]>(
     const exclude = Array.isArray(excludeOption)
         ? excludeOption
         : [excludeOption];
+    const startTime = Date.now();
     return (...args) => {
         const exec: ExecReturn<T, U> = (method, args, retry) => {
+            if ((Date.now() - startTime) > maxTime) {
+                throw new Error(
+                    `unique-callback: maxTime of ${maxTime}ms exceeded after ${retry} retries`
+                );
+            }
             if (retry > maxRetries) {
                 throw new Error(
                     `unique-callback: maxRetries of ${maxRetries} exceeded`

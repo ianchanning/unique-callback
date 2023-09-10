@@ -1,6 +1,6 @@
 {
   "name": "unique-callback",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Drop-in replacement for faker.unique. Generates a unique result using the results of the given method. Used unique entries will be stored internally and filtered from subsequent calls.",
   "main": "dist/index.js",
   "scripts": {

@@ -49,7 +49,7 @@ type ExecReturn<T, U extends readonly any[] = readonly any[]> = (
  * @param options The optional options used to configure this method.
  * @todo @param options.maxTime The time in milliseconds this method may take before throwing an error. Defaults to `50`.
  * @param options.maxRetries The total number of attempts to try before throwing an error. Defaults to `50`.
- * @todo @param options.exclude The value or values that should be excluded/skipped. Defaults to `[]`.
+ * @param options.exclude The value or values that should be excluded/skipped. Defaults to `[]`.
  * @param options.store The store of unique entries. Defaults to `GLOBAL_UNIQUE_STORE`.
  */
 export default function unique<T, U extends readonly any[] = readonly any[]>(
@@ -57,12 +57,19 @@ export default function unique<T, U extends readonly any[] = readonly any[]>(
     options: UniqueOptions<T> = {}
 ): UniqueReturn<T, U> {
     /**
-     * @todo implement exclude, startTime and maxTime
+     * @todo implement maxTime
      */
-    const { store: storeOption, maxRetries = 50, ...restOptions } = options;
+    const {
+        store: storeOption = {},
+        maxRetries = 50,
+        exclude: excludeOption = [],
+    } = options;
     const store: Map<string, T> = storeOption
         ? new Map(Object.entries(storeOption))
         : new Map();
+    const exclude = Array.isArray(excludeOption)
+        ? excludeOption
+        : [excludeOption];
     return (...args) => {
         const exec: ExecReturn<T, U> = (method, args, retry) => {
             if (retry > maxRetries) {
@@ -72,6 +79,9 @@ export default function unique<T, U extends readonly any[] = readonly any[]>(
             }
             const result = method(...args);
             const key = JSON.stringify(args) + JSON.stringify(result);
+            if ((exclude as T[]).includes(result)) {
+                return exec(method, args, retry + 1);
+            }
             if (store.has(key)) {
                 return exec(method, args, retry + 1);
             }

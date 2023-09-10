@@ -1,0 +1,32 @@
+{
+  "name": "unique-callback",
+  "version": "0.0.1",
+  "description": "Drop-in replacement for faker.unique. Generates a unique result using the results of the given method. Used unique entries will be stored internally and filtered from subsequent calls.",
+  "main": "dist/index.js",
+  "scripts": {
+    "prepare": "npm run build",
+    "build": "rimraf dist && tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ianchanning/unique-callback.git"
+  },
+  "keywords": [
+    "faker",
+    "unique",
+    "memoize",
+    "callback"
+  ],
+  "author": "Ian Channing <ian_channing@hotmail.com> (https://ianchanning.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ianchanning/unique-callback/issues"
+  },
+  "homepage": "https://github.com/ianchanning/unique-callback#readme",
+  "devDependencies": {
+    "prettier": "^3.0.3",
+    "rimraf": "^5.0.1",
+    "typescript": "^5.2.2"
+  }
+}
